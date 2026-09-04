@@ -114,6 +114,7 @@ function makeDiv(column, row) {
     const newDiv = document.createElement('div');
     newDiv.id = `c${column}r${row}`;
     newDiv.classList.add('blank');
+    newDiv.classList.add('square');
     return newDiv;
 }
 

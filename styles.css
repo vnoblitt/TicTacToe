@@ -22,3 +22,10 @@
 .blank {
     border: 1px solid black;
 }
+
+.square {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="tictactoe.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <button id="play-button">Play</button>
+        <div id="board-container"></div>
+        <div id="player-scores">
+            <div id="player-one-score"></div>
+            <div id="player-two-score"></div>
+        </div>
+    </div>
+    <p id="messages"></p>
+
+    <dialog id="player-names">
+        <div class="player">
+            <label for="player-one">Player 1:</label> 
+            <input id="player-one" class="player">
+        </div>
+        <div class="player">
+            <label for="player-two">Player 2:</label> 
+            <input id="player-two" class="player">
+        </div>
+        <button id="submit-names">Submit</button>
+    </dialog>
+</body>
+</html>

@@ -1,0 +1,24 @@
+#board-container {
+    display: grid;
+    grid-template-columns: repeat(3, 50px);
+    grid-template-rows: repeat(3, 50px);
+}
+
+#player-names[open] {
+    display: flex;
+    flex-direction: column;
+}
+
+#player-scores {
+    align-self: center;
+    justify-items: end;
+}
+
+.container {
+    display: flex;
+    gap: 10px;
+}
+
+.blank {
+    border: 1px solid black;
+}

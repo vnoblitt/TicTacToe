@@ -5,15 +5,17 @@ const playerOneScore = document.getElementById('player-one-score');
 const playerTwoScore = document.getElementById('player-two-score');
 const messages = document.getElementById('messages');
 
-playButton.addEventListener('click', () => {
-    nameModal.showModal();
-});
+playButton.addEventListener('click', openModal);
 
 submitNamesButton.addEventListener('click', () => {
     const players = submitNames();
     nameModal.close();
     play(players[0], players[1]);
 });
+
+function openModal() {
+    nameModal.showModal();
+}
 
 function submitNames() {
     const playerOneInput = document.getElementById('player-one');
@@ -28,8 +30,11 @@ function submitNames() {
 
 function play(playerOne, playerTwo) {
     const boardContainer = document.getElementById('board-container');
-    let board = setup(boardContainer);
+    playButton.disabled = true;
+    playButton.removeEventListener('click', openModal);
 
+    let board = setup(boardContainer);
+    console.log(board)
     updateScore(playerOne, playerTwo);
     resetMessage();
     playerOne.swapTurn();
@@ -39,13 +44,24 @@ function play(playerOne, playerTwo) {
         const clicked = event.target;
         currentPlayer = getPlayer(playerOne, playerTwo);
         if (clicked.classList.contains('blank')) {
+            let clickedSquare = board.find(sq => sq.id == clicked.id);
+            clickedSquare.markSquare(currentPlayer.symbol)
             resetMessage();
             clicked.classList.remove('blank');
             clicked.classList.add(currentPlayer.symbol);
             clicked.textContent = currentPlayer.symbol;
             
-            if(checkForWin(currentPlayer, board)) {
-                resetGame();
+            if(checkForWin(currentPlayer, board, clickedSquare.column, clickedSquare.row)) {
+                messages.textContent = `${currentPlayer.name} wins!`;
+                playButton.textContent = 'reset?'
+                playButton.disabled = false;
+                board = []
+                currentPlayer.increaseWins();
+                updateScore(playerOne, playerTwo);
+                playButton.addEventListener('click', () => {
+                    board = resetGame(boardContainer)
+                });
+                
             } else {
                 tradeTurns(playerOne, playerTwo);
             }
@@ -67,8 +83,8 @@ function setup(board) {
         const tile = makeTile(i);
         const div = makeDiv(tile[0], tile[1]);
         board.append(div);
-
-        arr.push({id: div.id, symbol: ''});
+        const square = new Square(div.id, '')
+        arr.push(square);
     }
 
     return arr;
@@ -104,6 +120,12 @@ function makePlayer(name, symbol) {
 function Square(id, symbol) {
     this.id = id;
     this.symbol = symbol;
+    const idToChar = id.split('');
+    this.column = idToChar[1];
+    this.row = idToChar[3];
+    this.markSquare = function(sym) {
+        this.symbol = sym;
+    }
 }
 
 function getPlayer(playerOne, playerTwo) {
@@ -130,12 +152,85 @@ function resetMessage() {
     messages.textContent = 'I want a good clean match'
 }
 
-function updateBoard(board) {
+function checkForWin(player, board, column, row) {
+    let won = false;
+   
+    won = checkColumn(board, column, player.symbol);
 
+    if(!won) {
+        won = checkRow(board, row, player.symbol);
+    }
+
+    if(!won) {
+        won = checkLeftDiagonal(board, player.symbol);
+    }
+
+    if(!won) {
+        won = checkRightDiagonal(board, player.symbol);
+    }
+
+    return won;
 }
 
-function checkForWin(player, board) {
-    for (div of board) {
-        console.log(board.id);
+function checkColumn(board, checkedColumn, symbol) {
+    let count = 0;
+    for(square of board) {
+        if (square.column == checkedColumn && square.symbol == symbol) {
+            count++
+        } 
     }
+    if (count == 3) return true;
+    else return false;
+}
+
+function checkRow(board, checkedRow, symbol) {
+    let count = 0;
+    for(square of board) {
+        if (square.row == checkedRow && square.symbol == symbol) {
+            count++
+        } 
+    }
+    if (count == 3) return true;
+    else return false;
+}
+
+function checkLeftDiagonal(board, symbol) {
+    let count = 0;
+    for(square of board) {
+        if (square.symbol == symbol && square.column == 0 && square.row == 0) {
+            count++;
+        }
+        if (square.symbol == symbol && square.column == 1 && square.row == 1) {
+            count++;
+        }
+        if (square.symbol == symbol && square.column == 2 && square.row == 2) {
+            count++;
+        }
+    }
+    if (count == 3) return true;
+    else return false;
+}
+
+
+function checkRightDiagonal(board, symbol) {
+    let count = 0;
+    for(square of board) {
+        if (square.symbol == symbol && square.column == 2 && square.row == 0) {
+            count++;
+        }
+        if (square.symbol == symbol && square.column == 1 && square.row == 1) {
+            count++;
+        }
+        if (square.symbol == symbol && square.column == 0 && square.row == 2) {
+            count++;
+        }
+    }
+
+    if (count == 3) return true;
+    else return false;
+}
+
+function resetGame(boardContainer) {
+    boardContainer.innerHTML = ''
+    return setup(boardContainer);
 }

@@ -39,6 +39,7 @@ function play(playerOne, playerTwo) {
     resetMessage();
     playerOne.swapTurn();
     let currentPlayer;
+    let squaresLeft = 9;
 
     boardContainer.addEventListener('click', () => {
         const clicked = event.target;
@@ -50,18 +51,30 @@ function play(playerOne, playerTwo) {
             clicked.classList.remove('blank');
             clicked.classList.add(currentPlayer.symbol);
             clicked.textContent = currentPlayer.symbol;
-            
+            squaresLeft--;
+
             if(checkForWin(currentPlayer, board, clickedSquare.column, clickedSquare.row)) {
                 messages.textContent = `${currentPlayer.name} wins!`;
                 playButton.textContent = 'reset?'
                 playButton.disabled = false;
                 board = []
+                squaresLeft = 9;
                 currentPlayer.increaseWins();
                 updateScore(playerOne, playerTwo);
                 playButton.addEventListener('click', () => {
-                    board = resetGame(boardContainer)
+                    board = resetGame(boardContainer);
                 });
                 
+            } else if (squaresLeft == 0) {
+                messages.textContent = 'Draw.';
+                playButton.textContent = 'reset?'
+                playButton.disabled = false;
+                board = []
+                squaresLeft = 9;
+                playButton.addEventListener('click', () => {
+                    board = resetGame(boardContainer);
+                });
+
             } else {
                 tradeTurns(playerOne, playerTwo);
             }

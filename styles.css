@@ -1,3 +1,68 @@
+body {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+}
+
+.header { 
+    height: 70px;
+    background-color: #354f52;
+    border-bottom: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.header h1 {
+    margin: 0;
+}
+
+.body {
+    display: flex;
+}
+.sidebar {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    width: 100px;
+    background-color: #84a98c;
+    height: 100vh;
+    gap: 5px; 
+    border-right: 1px solid black;
+}
+
+#new-game {
+    box-sizing: border-box;
+    height: 50px;
+    width: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #2f3e46;
+}
+
+#new-game:hover { 
+    background-color: #cad2c5;
+    cursor: pointer;
+}
+
+#player-one-container,
+#player-two-container {
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    height: 50px;
+    width: 100px;
+    border: 1px transparent #2f3e46;
+    align-items: center;
+    padding: 5px;
+}
+
+#player-one-container:not(:empty),
+#player-two-container:not(:empty) {
+    border: 1px solid #2f3e46;;
+}
+
 #board-container {
     display: grid;
     grid-template-columns: repeat(3, 50px);
@@ -9,15 +74,16 @@
     flex-direction: column;
 }
 
-#player-scores {
-    align-self: center;
-    justify-items: end;
+.container {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: #cad2c5;
+    width: 100%;
 }
 
-.container {
-    display: flex;
-    gap: 10px;
-}
+
 
 .blank {
     border: 1px solid black;

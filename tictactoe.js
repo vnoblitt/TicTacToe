@@ -1,20 +1,29 @@
 const playButton = document.getElementById('play-button');
 const submitNamesButton = document.getElementById('submit-names');
 const nameModal = document.getElementById('player-names');
-const playerOneScore = document.getElementById('player-one-score');
-const playerTwoScore = document.getElementById('player-two-score');
+const playerOneContainer = document.getElementById('player-one-container');
+const playerTwoContainer = document.getElementById('player-two-container');
+
 const messages = document.getElementById('messages');
+const newGame= document.getElementById('new-game');
+let gameStarted = false;
+// playButton.addEventListener('click', openModal);
 
-playButton.addEventListener('click', openModal);
+newGame.addEventListener('click', function(event) {
+    event.preventDefault();
 
-submitNamesButton.addEventListener('click', () => {
-    const players = submitNames();
-    nameModal.close();
-    play(players[0], players[1]);
+    if(!gameStarted) openModal();
 });
 
 function openModal() {
     nameModal.showModal();
+
+    submitNamesButton.addEventListener('click', () => {
+        const players = submitNames();
+        nameModal.close();
+        
+        play(players[0], players[1]);
+    });
 }
 
 function submitNames() {
@@ -25,13 +34,33 @@ function submitNames() {
     const playerOne = makePlayer(playerOneName, 'X');
     const playerTwo = makePlayer(playerTwoName, 'O');
     const players = [playerOne, playerTwo];
+
+    const playerOneNameP = document.createElement('p');
+    const playerTwoNameP = document.createElement('p');
+    const playerOneScoreP = document.createElement('p');
+    const playerTwoScoreP = document.createElement('p');
+    playerOneNameP.id = 'p1-name';
+    playerTwoNameP.id = 'p2-name';
+    playerOneScoreP.id = 'p1-score';
+    playerTwoScoreP.id = 'p2-score';
+    playerOneNameP.textContent = `${playerOne.name}:`;
+    playerTwoNameP.textContent = `${playerTwo.name}:`;
+    playerOneScoreP.textContent = playerOne.getWins();
+    playerTwoScoreP.textContent = playerTwo.getWins();
+    playerOneContainer.append(playerOneNameP, playerOneScoreP);
+    playerTwoContainer.append(playerTwoNameP, playerTwoScoreP);
+
     return players;
 }
 
 function play(playerOne, playerTwo) {
+    gameStarted = true;
     const boardContainer = document.getElementById('board-container');
+
+    /*
     playButton.disabled = true;
     playButton.removeEventListener('click', openModal);
+    */
 
     let board = setup(boardContainer);
     console.log(board)
@@ -158,8 +187,10 @@ function tradeTurns(playerOne, playerTwo) {
 }
 
 function updateScore(playerOne, playerTwo) {
-    playerOneScore.textContent = `${playerOne.name}: ${playerOne.getWins()}`;
-    playerTwoScore.textContent = `${playerTwo.name}: ${playerTwo.getWins()}`;
+    const playerOneScore = document.getElementById('p1-score');
+    const playerTwoScore = document.getElementById('p2-score');
+    playerOneScore.textContent = `${playerOne.getWins()}`;
+    playerTwoScore.textContent = `${playerTwo.getWins()}`;
 }
 
 function resetMessage() {

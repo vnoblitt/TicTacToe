@@ -1,18 +1,18 @@
-const playButton = document.getElementById('play-button');
 const submitNamesButton = document.getElementById('submit-names');
 const nameModal = document.getElementById('player-names');
 const playerOneContainer = document.getElementById('player-one-container');
 const playerTwoContainer = document.getElementById('player-two-container');
-
+const boardContainer = document.getElementById('board-container');
 const messages = document.getElementById('messages');
 const newGame= document.getElementById('new-game');
 let gameStarted = false;
+let firstGame = true;
 // playButton.addEventListener('click', openModal);
 
 newGame.addEventListener('click', function(event) {
     event.preventDefault();
 
-    if(!gameStarted) openModal();
+    if(firstGame) openModal();
 });
 
 function openModal() {
@@ -54,60 +54,69 @@ function submitNames() {
 }
 
 function play(playerOne, playerTwo) {
+    firstGame = false;
     gameStarted = true;
-    const boardContainer = document.getElementById('board-container');
-
-    /*
-    playButton.disabled = true;
-    playButton.removeEventListener('click', openModal);
-    */
-
     let board = setup(boardContainer);
     console.log(board)
     updateScore(playerOne, playerTwo);
     resetMessage();
     playerOne.swapTurn();
+    playerOneContainer.classList.add('active');
     let currentPlayer;
     let squaresLeft = 9;
+
+    newGame.addEventListener('click', function(event) {
+        event.preventDefault();
+        if(!gameStarted) {
+            board = resetGame(boardContainer);
+            gameStarted = true;
+            resetMessage();
+            if(playerOne.getTurn()) {
+                playerOneContainer.classList.add('active');
+                playerTwoContainer.classList.remove('active');
+            } else {
+                tradeTurns(playerOne, playerTwo);
+            }
+        }
+    });
 
     boardContainer.addEventListener('click', () => {
         const clicked = event.target;
         currentPlayer = getPlayer(playerOne, playerTwo);
         if (clicked.classList.contains('blank')) {
-            let clickedSquare = board.find(sq => sq.id == clicked.id);
-            clickedSquare.markSquare(currentPlayer.symbol)
-            resetMessage();
-            clicked.classList.remove('blank');
-            clicked.classList.add(currentPlayer.symbol);
-            clicked.textContent = currentPlayer.symbol;
-            squaresLeft--;
+            if (gameStarted) {
+                let clickedSquare = board.find(sq => sq.id == clicked.id);
+                clickedSquare.markSquare(currentPlayer.symbol)
+                resetMessage();
+                clicked.classList.remove('blank');
+                clicked.classList.add(currentPlayer.symbol);
+                clicked.textContent = currentPlayer.symbol;
+                squaresLeft--;
 
-            if(checkForWin(currentPlayer, board, clickedSquare.column, clickedSquare.row)) {
-                messages.textContent = `${currentPlayer.name} wins!`;
-                playButton.textContent = 'reset?'
-                playButton.disabled = false;
-                board = []
-                squaresLeft = 9;
-                currentPlayer.increaseWins();
-                updateScore(playerOne, playerTwo);
-                playButton.addEventListener('click', () => {
-                    board = resetGame(boardContainer);
-                });
-                
-            } else if (squaresLeft == 0) {
-                messages.textContent = 'Draw.';
-                playButton.textContent = 'reset?'
-                playButton.disabled = false;
-                board = []
-                squaresLeft = 9;
-                playButton.addEventListener('click', () => {
-                    board = resetGame(boardContainer);
-                });
+                if(checkForWin(currentPlayer, board, clickedSquare.column, clickedSquare.row)) {
+                    gameStarted = false;
+                    messages.textContent = `${currentPlayer.name} wins!`;
+                    squaresLeft = 9;
+                    currentPlayer.increaseWins();
+                    updateScore(playerOne, playerTwo);
+                    
+                    /* THIS NEEDS TO CHANGE BECAUSE I 
+                    ELIMINATED THE PLAY BUTTON
 
-            } else {
-                tradeTurns(playerOne, playerTwo);
+                    playButton.addEventListener('click', () => {
+                        board = resetGame(boardContainer);
+                    }); */
+
+                    
+                } else if (squaresLeft == 0) {
+                    gameStarted = false;
+                    messages.textContent = 'Draw.';
+                    squaresLeft = 9;
+
+                } else {
+                    tradeTurns(playerOne, playerTwo);
+                }
             }
-            
         } else {
             messages.textContent = 'That space is taken.'
         }
@@ -182,6 +191,14 @@ function getPlayer(playerOne, playerTwo) {
 }
 
 function tradeTurns(playerOne, playerTwo) {
+    console.log(playerOne.getTurn())
+    if(playerOne.getTurn()) {
+        playerOneContainer.classList.remove('active');
+        playerTwoContainer.classList.add('active');
+    } else {
+        playerOneContainer.classList.add('active');
+        playerTwoContainer.classList.remove('active');
+    }
     playerOne.swapTurn();
     playerTwo.swapTurn();
 }

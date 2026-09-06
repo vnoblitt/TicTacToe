@@ -5,14 +5,30 @@ const playerTwoContainer = document.getElementById('player-two-container');
 const boardContainer = document.getElementById('board-container');
 const messages = document.getElementById('messages');
 const newGame= document.getElementById('new-game');
+const winToggle = document.getElementById('win-toggle');
 let gameStarted = false;
 let firstGame = true;
+let mode = 'default';
 // playButton.addEventListener('click', openModal);
 
 newGame.addEventListener('click', function(event) {
     event.preventDefault();
 
     if(firstGame) openModal();
+});
+
+winToggle.addEventListener('click', () => {
+    if (mode === 'default') {
+        mode = 'loser';
+        winToggle.textContent = 'Loser Plays';
+    } else if (mode === 'loser') {
+        mode = 'swap';
+    // Need a more clear way of saying this.
+        winToggle.textContent = 'Take Turns';
+    } else if (mode === 'swap') {
+        mode = 'default';
+        winToggle.textContent = 'X Plays';
+    }
 });
 
 function openModal() {
@@ -56,6 +72,7 @@ function submitNames() {
 function play(playerOne, playerTwo) {
     firstGame = false;
     gameStarted = true;
+    let gamesPlayed = 0;
     let board = setup(boardContainer);
     console.log(board)
     updateScore(playerOne, playerTwo);
@@ -71,11 +88,27 @@ function play(playerOne, playerTwo) {
             board = resetGame(boardContainer);
             gameStarted = true;
             resetMessage();
-            if(playerOne.getTurn()) {
-                playerOneContainer.classList.add('active');
-                playerTwoContainer.classList.remove('active');
-            } else {
-                tradeTurns(playerOne, playerTwo);
+            console.log(mode)
+            switch(mode) {
+                case ('default'):
+                    if(playerOne.getTurn()) {
+                        playerOneContainer.classList.add('active');
+                        playerTwoContainer.classList.remove('active');
+                    } else {
+                        tradeTurns(playerOne, playerTwo);
+                    } break;
+                case ('loser'):                    
+                    if(currentPlayer.getWonLast()) {
+                        tradeTurns(playerOne, playerTwo);
+                    }
+                    break;
+                case ('swap'):
+                    console.log(currentPlayer)
+                    if (!(gamesPlayed % 2)) {
+                        if (currentPlayer === playerTwo) tradeTurns(playerOne, playerTwo);
+                    } else if (currentPlayer === playerOne) tradeTurns(playerOne, playerTwo);
+                    break;
+                    
             }
         }
     });
@@ -97,18 +130,21 @@ function play(playerOne, playerTwo) {
                     gameStarted = false;
                     messages.textContent = `${currentPlayer.name} wins!`;
                     squaresLeft = 9;
+                    gamesPlayed++;
                     currentPlayer.increaseWins();
                     updateScore(playerOne, playerTwo);
                     
-                    /* THIS NEEDS TO CHANGE BECAUSE I 
-                    ELIMINATED THE PLAY BUTTON
-
-                    playButton.addEventListener('click', () => {
-                        board = resetGame(boardContainer);
-                    }); */
-
-                    
+                    if(currentPlayer === playerOne) {
+                        if (!playerOne.getWonLast()) {
+                            playerOne.changeWonLast();
+                            if (playerTwo.getWonLast()) playerTwo.changeWonLast();   
+                        }             
+                    } else if (!playerTwo.getWonLast()) {
+                        playerTwo.changeWonLast();
+                        if (playerOne.getWonLast()) playerOne.changeWonLast();
+                    }                  
                 } else if (squaresLeft == 0) {
+                    gamesPlayed++;
                     gameStarted = false;
                     messages.textContent = 'Draw.';
                     squaresLeft = 9;
@@ -160,13 +196,15 @@ function makePlayer(name, symbol) {
     let wins = 0;
     let losses = 0;
     let turn = false;
+    let wonLastTime = false;
     const getWins = () => wins;
     const getLosses = () => losses;
+    const getWonLast = () => wonLastTime;
     const getTurn = () => turn;
     const increaseWins = () => { wins++; };
-    const increaseLosses = () => { losses++; };
+    const changeWonLast = () => { wonLastTime = !wonLastTime; };
     const swapTurn = () => { turn = !turn }
-    return { name, symbol, getWins, getLosses, getTurn, increaseWins, increaseLosses,  swapTurn };
+    return { name, symbol, getWins, getLosses, getWonLast, getTurn, increaseWins, changeWonLast,  swapTurn };
 }
 
 function Square(id, symbol) {
@@ -191,7 +229,6 @@ function getPlayer(playerOne, playerTwo) {
 }
 
 function tradeTurns(playerOne, playerTwo) {
-    console.log(playerOne.getTurn())
     if(playerOne.getTurn()) {
         playerOneContainer.classList.remove('active');
         playerTwoContainer.classList.add('active');

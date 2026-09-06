@@ -3,6 +3,7 @@ body {
     display: flex;
     flex-direction: column;
     margin: 0;
+    box-sizing: border-box;
 }
 
 .header { 
@@ -33,6 +34,7 @@ body {
     border-right: 1px solid black;
 }
 
+#win-toggle,
 #new-game {
     box-sizing: border-box;
     height: 50px;
@@ -43,6 +45,7 @@ body {
     border: 1px solid #2f3e46;
 }
 
+#win-toggle:hover,
 #new-game:hover { 
     background-color: #cad2c5;
     cursor: pointer;
@@ -99,8 +102,47 @@ body {
     align-items: center;
     justify-content: center;
     text-align: center;
+    border: 1px solid black;
 }
 
 dialog {
     gap: 10px;
 }
+
+#c0r0 {
+    border-left: 0;
+    border-top: 0;
+}
+
+#c1r0 {
+    border-top: 0;
+}
+
+#c2r0 {
+    border-right: 0;
+    border-top: 0;
+    
+}
+
+#c0r1 {
+    border-left: 0;
+}
+
+#c2r1 {
+    border-right: 0;
+}
+
+#c0r2 {
+    border-left: 0;
+    border-bottom: 0;
+}
+
+#c1r2 {
+    border-bottom: 0;
+}
+
+#c2r2 {
+    border-right: 0;
+    border-bottom: 0; 
+}
+
